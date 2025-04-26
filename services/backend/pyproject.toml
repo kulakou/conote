@@ -1,0 +1,11 @@
+[project]
+name = 'conote_backend'
+version = "0.0.1"
+dependencies = [
+    "fastapi==0.115.12",
+    "uvicorn==0.34.2",
+    "alembic==1.15.2",
+    "SQLAlchemy==2.0.40",
+    "pydantic==2.11.3",
+    "pydantic-settings==2.8.1",
+]
