@@ -1,0 +1,9 @@
+[project]
+name = 'conote_bot'
+version = "0.0.1"
+dependencies = [
+    "pydantic-settings==2.8.1",
+    "pyTelegramBotAPI==4.26.0",
+    "asyncio==3.4.3",
+    "aiohttp==3.11.16"
+]
