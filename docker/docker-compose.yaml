@@ -17,6 +17,15 @@ services:
       - postgres
     volumes:
       - ../services/backend:/service
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/images/frontend.Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../services/frontend:/service
+      - node_modules:/service/node_modules
   postgres:
     image: postgres:16-alpine
     environment:
@@ -36,3 +45,4 @@ services:
 
 volumes:
   pgdata:
+  node_modules:
