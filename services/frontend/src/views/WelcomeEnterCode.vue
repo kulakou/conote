@@ -1,10 +1,11 @@
 <script setup lang="ts">
   import HomeCard from "../components/HomeCard.vue";
   import AboutLine from "../components/AboutLine.vue";
+  import EnterCode from "../components/EnterCode.vue";
   import { useWebApp } from "vue-tg";
 
   const { initDataUnsafe, close } = useWebApp();
-  const user = initDataUnsafe.user || {"id": null, "first_name": "Anonymous"};
+  const user = initDataUnsafe.user || "anon";
 </script>
 
 <template>
@@ -13,7 +14,7 @@
       <HomeCard />
     </div>
     <div class="px-8 my-auto">
-      Homepage. User: '{{ user.first_name }}'
+      <EnterCode />
     </div>
     <div class="px-8 pb-8 mt-auto">
       <AboutLine />

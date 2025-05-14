@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import Header from './components/Header.vue';
+  import { useWebApp } from "vue-tg";
+  import { useRouter } from "vue-router";
+
+  const { initDataUnsafe, close } = useWebApp();
+  const user = initDataUnsafe.user || null;
+
+  if (user == null) {
+    const router = useRouter();
+    router.push(`/notg`)
+  }
 </script>
 
 <template>
-  <div id="app">
-    <Header />
-    <main class="p-4">
-      <router-view />
-    </main>
-  </div>
+    <router-view />
 </template>
 
 <style scoped>
-/* Глобальные стили приложения */
+/* Styles global */
 </style>

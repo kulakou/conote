@@ -1,10 +1,6 @@
 <script setup lang="ts">
   import HomeCard from "../components/HomeCard.vue";
   import AboutLine from "../components/AboutLine.vue";
-  import { useWebApp } from "vue-tg";
-
-  const { initDataUnsafe, close } = useWebApp();
-  const user = initDataUnsafe.user || {"id": null, "first_name": "Anonymous"};
 </script>
 
 <template>
@@ -12,8 +8,10 @@
     <div class="px-8 py-4">
       <HomeCard />
     </div>
-    <div class="px-8 my-auto">
-      Homepage. User: '{{ user.first_name }}'
+    <div class="px-8 my-auto text-center">
+      <p>CoNote application currently supports only Telegram MiniApp usage</p><br>
+      <p>Please, use our telegram bot</p>
+      <p><b>@conote_bot</b></p>
     </div>
     <div class="px-8 pb-8 mt-auto">
       <AboutLine />
