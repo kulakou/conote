@@ -10,7 +10,9 @@ annotated-types==0.7.0
     # via pydantic
 anyio==4.9.0
     # via starlette
-click==8.1.8
+asyncpg==0.30.0
+    # via conote_backend (pyproject.toml)
+click==8.2.0
     # via uvicorn
 fastapi==0.115.12
     # via conote_backend (pyproject.toml)
