@@ -1,14 +1,12 @@
-import { createPinia } from "pinia";
-import { createApp } from "vue";
-import "./assets/styles/index.css";
-import App from "./App.vue";
-import router from "./router";
-import { VueTelegramPlugin } from 'vue-tg'
+import './assets/main.css'
+import { createApp } from 'vue'
+import App from './App.vue'
+import { createPinia } from 'pinia'
+import { router } from './router'
 
-const app = createApp(App);
-const pinia = createPinia();
+const app = createApp(App)
 
-app.use(router);
-app.use(VueTelegramPlugin)
-app.use(pinia)
-app.mount("#app");
+app.use(createPinia())
+app.use(router)
+
+app.mount('#app')

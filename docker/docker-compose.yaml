@@ -1,10 +1,4 @@
 services:
-  bot:
-    build:
-      context: ..
-      dockerfile: docker/images/bot.Dockerfile
-    env_file:
-      - ../services/bot/envs/dev.env
   backend:
     build:
       context: ..
