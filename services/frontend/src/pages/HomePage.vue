@@ -71,9 +71,5 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-
-const store = useUserStore()
-const user = store.tgUser
 const router = useRouter()
 </script>

@@ -53,10 +53,8 @@
 
 <script setup lang="ts">
   import { ref, reactive, watch, onMounted } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { useUserStore } from '@/stores/user'
 
-  const store = useUserStore()
+  import { useRouter } from 'vue-router'
   const router = useRouter()
 
   const handleBack = () => {
@@ -100,16 +98,7 @@
     return null
   }
 
-  const handleRegistration = async () => {
-    if (!store.tgUser) return
-    try {
-      const code = checkIfComplete()
-      if (code !== null) {
-        await store.registerUser(code)
-        router.push('/home')
-      }
-    } catch (error) {
-      console.error('Ошибка при регистрации пользователя:', error)
-    }
+  const handleRegistration = () => {
+    router.push('/home')
   }
 </script>

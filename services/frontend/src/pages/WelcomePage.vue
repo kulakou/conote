@@ -40,19 +40,10 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-
-const store = useUserStore()
 const router = useRouter()
 
-const handleRegister = async () => {
-  if (!store.tgUser) return
-  try {
-    await store.registerUser()
-    router.push('/home')
-  } catch (error) {
-    console.error('Ошибка при регистрации пользователя:', error)
-  }
+const handleRegister = () => {
+  router.push('/home')
 }
 
 const handleEnterCodeRedir = () => {
