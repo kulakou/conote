@@ -9,6 +9,13 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: []
+    allowedHosts: ["app.conote.app", ],
+    proxy: {
+      '/api': {
+        target: 'http://backend:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   }
 })
