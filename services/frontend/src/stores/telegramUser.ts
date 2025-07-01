@@ -25,6 +25,8 @@ export const useTelegramUserStore = defineStore('telegramUser', {
   state: () => ({
     initDataRaw: '',
     initDataParsed: {} as TelegramInitData,
+    userIsRegistered: undefined as boolean | undefined,
+    initDataValid: false,
   }),
   getters: {
     user: (state) => state.initDataParsed.user,
@@ -34,22 +36,34 @@ export const useTelegramUserStore = defineStore('telegramUser', {
   actions: {
     setInitData(initData: string) {
       this.initDataRaw = initData
+      localStorage.setItem('tg_init_data', initData) // сохраняем прямо здесь
+
       try {
         const decoded = new URLSearchParams(initData)
         const parsed: TelegramInitData = {}
 
         for (const [key, value] of decoded.entries()) {
           if (key === 'user') {
-            parsed.user = JSON.parse(value)
+            try {
+              parsed.user = JSON.parse(value)
+            } catch (e) {
+              console.warn('Не удалось распарсить user:', e)
+              this.initDataValid = false
+              return
+            }
           } else {
             parsed[key] = value
           }
         }
+
         this.initDataParsed = parsed
+        this.initDataValid = true
       } catch (error) {
         console.error('Ошибка парсинга initData:', error)
+        this.initDataValid = false
       }
     },
+
     async verifyOnBackend(): Promise<boolean> {
       if (!this.initDataRaw) return false
       try {
@@ -61,6 +75,26 @@ export const useTelegramUserStore = defineStore('telegramUser', {
         console.error('Ошибка верификации Telegram:', e)
         return false
       }
-    }
+    },
+
+    async registerUser(code = null): Promise<boolean> {
+      try {
+        let data = {
+          tg_id: this.user.id,
+          tg_username: this.user.username
+        }
+        if (code !== null) {
+          data.code = code
+        }
+        await axios.post('/api/telegram_users/register', data)
+        this.userIsRegistered = true
+      } catch (error) {
+        console.error('Registration failed', error)
+        throw error
+      }
+    },
+
+
+
   },
 })

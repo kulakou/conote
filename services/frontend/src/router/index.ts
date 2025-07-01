@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/pages/HomePage.vue'
-import NotFromTelegramPage from "../pages/NotFromTelegramPage.vue";
-import WelcomePage from "../pages/WelcomePage.vue";
-import WelcomeEnterCodePage from "../pages/WelcomeEnterCodePage.vue";
+import NotFromTelegramPage from '@/pages/NotFromTelegramPage.vue'
+import WelcomePage from '@/pages/WelcomePage.vue'
+import WelcomeEnterCodePage from '@/pages/WelcomeEnterCodePage.vue'
 import { useTelegramUserStore } from '@/stores/telegramUser'
 
 const routes = [
@@ -18,39 +18,31 @@ export const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
   const store = useTelegramUserStore()
-
-  // No Telegram check
-  if (!store.initDataRaw && to.path !== '/notg') {
-    return next('/notg')
-  }
 
   const publicPages = ['/welcome', '/welcome/code', '/notg']
   const authRequired = !publicPages.includes(to.path)
 
-  if (!authRequired) {
-    return next()
+  // 1. Нет initData
+  if (!store.initDataRaw && to.path !== '/notg') {
+    return next('/notg')
   }
 
-  if (!store.isAuthenticated) {
-    return next('/welcome')
+  // 2. Невалидный initData
+  if (!store.initDataValid && to.path !== '/notg') {
+    return next('/notg')
   }
 
-  // Already verified?
-  if (store.userIsRegistered !== undefined) {
-    if (!store.userIsRegistered && !to.path.startsWith('/welcome')) {
+  // 3. Для защищённых страниц
+  if (authRequired) {
+    if (!store.isAuthenticated && !to.path.startsWith('/welcome')) {
       return next('/welcome')
     }
-    return next()
-  }
 
-  // Verify on backend
-  const isRegistered = await store.verifyOnBackend()
-  store.userIsRegistered = isRegistered
-
-  if (!isRegistered && !to.path.startsWith('/welcome')) {
-    return next('/welcome')
+    if (store.userIsRegistered === false && !['/welcome', '/welcome/code'].includes(to.path)) {
+      return next('/welcome')
+    }
   }
 
   next()

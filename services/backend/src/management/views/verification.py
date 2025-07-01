@@ -1,6 +1,9 @@
+import hashlib
+import hmac
+
 import sqlalchemy as sa
 from fastapi import APIRouter, HTTPException, Depends
-from urllib.parse import parse_qsl
+from urllib.parse import parse_qsl, unquote
 import os
 import json
 from pydantic import BaseModel
@@ -17,9 +20,12 @@ verification_router = APIRouter(prefix='/telegram_users')
 
 
 def check_telegram_auth(init_data: str) -> bool:
-    # TODO: Add hash verification
     try:
-        return True
+        vals = {k: unquote(v) for k, v in [s.split('=', 1) for s in init_data.split('&')]}
+        data_check_string = '\n'.join(f"{k}={v}" for k, v in sorted(vals.items()) if k != 'hash')
+        secret_key = hmac.new("WebAppData".encode(), BOT_TOKEN.encode(), hashlib.sha256).digest()
+        h = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256)
+        return h.hexdigest() == vals['hash']
     except Exception as e:
         return False
 

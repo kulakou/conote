@@ -18,10 +18,10 @@
             href="#"
             class="mt-1 text-lg tracking-tight font-medium text-black hover:underline"
           >
-            It's so simple sharing notes 🥹
+            Это так просто - делиться 🥹
           </a>
           <p class="mt-2 text-sm text-slate-500">
-            Enter one of the available rooms and start noting private or with your friends 🤝
+            Войди в одну из доступных комнат и начни вести записки для себя или делиться со своими друзьями 🤝
           </p>
         </div>
       </div>
@@ -31,13 +31,13 @@
       <div class="max-w-2xl mx-auto bg-white rounded-sm shadow-md">
         <div class="p-6 text-center">
           <div class="uppercase tracking-wide text-sm text-violet-500 font-medium mb-4">
-            This is a Homepage! You can:
+            Привет, <a class="text-red-500">{{ store.user.first_name }}</a>! Ты можешь:
           </div>
           <button @click="" class="my-2 w-full text-gray-600 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 hover:brightness-105 rounded-lg text-sm py-2.5 text-center">
-            Enter private Room
+            Войти в личную комнату
           </button>
           <button @click="" class="my-2 w-full text-gray-600 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 hover:brightness-105 rounded-lg text-sm py-2.5 text-center">
-            See shared Rooms
+            Посмотреть все комнаты
           </button>
         </div>
       </div>
@@ -46,10 +46,10 @@
       <div class="max-w-2xl mx-auto bg-white rounded-sm shadow-md">
         <div class="p-6 text-center">
           <div class="uppercase tracking-wide text-sm text-violet-500 font-medium mb-4">
-            Wait! You can also:
+            Подожди! Не забудь:
           </div>
           <button @click="" class="w-full text-white bg-gradient-to-r from-green-500 via-green-500 to-green-500 hover:brightness-105 rounded-lg text-sm py-2.5 text-center">
-            Invite your friends to Collaborate!
+            Пригласить своих друзей в CoNote!
           </button>
         </div>
       </div>
@@ -71,5 +71,8 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { useTelegramUserStore } from '@/stores/telegramUser'
+
 const router = useRouter()
+const store = useTelegramUserStore()
 </script>

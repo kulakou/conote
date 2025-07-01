@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.management.views.verification import verification_router
+from src.management.views.users import telegram_users_router
 
 
 app = FastAPI(
@@ -19,3 +20,4 @@ app.add_middleware(
 )
 
 app.include_router(verification_router)
+app.include_router(telegram_users_router)

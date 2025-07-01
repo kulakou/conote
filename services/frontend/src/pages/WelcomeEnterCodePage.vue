@@ -17,16 +17,14 @@
             href="#"
             class="mt-1 text-lg tracking-tight font-medium text-black hover:underline"
           >
-            It's so simple sharing notes 🥹
+            Это так просто - делиться 🥹
           </a>
           <p class="mt-2 text-sm text-slate-500">
-            You're just a few steps away from collaborating with your Telegram friends 🤝
+            Ты в паре шагов от того чтобы начать делиться записками с такими друзьями прямо в Telegram 🤝
           </p>
         </div>
       </div>
-    </div>
-    <div class="px-8 my-auto">
-      <div class="flex max-w-2xl mx-auto flex-col items-center">
+      <div class="flex max-w-2xl mx-auto mt-10 flex-col items-center">
         <div class="flex gap-2 m-4">
           <input
             v-for="(digit, index) in code"
@@ -34,17 +32,19 @@
             v-model="code[index]"
             ref="inputRefs"
             type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
             maxlength="1"
-            class="w-12 h-12 text-2xl text-center border-2 border-gray-300 rounded focus:outline-none focus:border-green-500"
+            class="w-10 h-12 text-2xl text-center border-2 border-gray-300 rounded focus:outline-none focus:border-green-500"
             @input="handleInput(index)"
             @keydown.backspace.prevent="handleBackspace(index)"
           />
         </div>
         <button @click="handleRegistration" class="text-white bg-gradient-to-r from-green-500 to-green-500 hover:brightness-105 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700 rounded-lg text-sm px-3 py-1.5 text-center">
-          Start with provided code
+          Войти с этим кодом
         </button>
         <button @click="handleBack" class="text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700 rounded-lg text-sm px-3 py-1.5 text-center">
-          Go Back
+          Назад
         </button>
       </div>
     </div>
@@ -53,9 +53,11 @@
 
 <script setup lang="ts">
   import { ref, reactive, watch, onMounted } from 'vue'
-
   import { useRouter } from 'vue-router'
+  import { useTelegramUserStore } from '@/stores/telegramUser'
+
   const router = useRouter()
+  const store = useTelegramUserStore()
 
   const handleBack = () => {
     router.push('/welcome')
@@ -84,6 +86,7 @@
     if (code[index] === '') {
       if (index > 0) {
         inputRefs.value[index - 1]?.focus()
+        code[index - 1] = ''
       }
     } else {
       code[index] = ''
@@ -98,7 +101,15 @@
     return null
   }
 
-  const handleRegistration = () => {
-    router.push('/home')
+  const handleRegistration = async () => {
+    try {
+      const code = checkIfComplete()
+      if (code !== null) {
+        await store.registerUser(code)
+        router.push('/home')
+      }
+    } catch (error) {
+      console.error('Ошибка при регистрации пользователя:', error)
+    }
   }
 </script>

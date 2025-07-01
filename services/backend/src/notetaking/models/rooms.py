@@ -16,6 +16,7 @@ telegram_users_rooms_association = sa.Table(
 
 
 class RoomType(Enum):
+    SINGLE_SEAT_PRIVATE = "single_seat_private"
     SINGLE_SEAT = "single_seat"
     SHARED = "shared"
 

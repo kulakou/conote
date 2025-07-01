@@ -17,10 +17,10 @@
             href="#"
             class="mt-1 text-lg tracking-tight font-medium text-black hover:underline"
           >
-            It's so simple sharing notes 🥹
+            Это так просто - делиться 🥹
           </a>
           <p class="mt-2 text-sm text-slate-500">
-            You're just a few steps away from collaborating with your Telegram friends 🤝
+            Ты в паре шагов от того чтобы начать делиться записками с такими друзьями прямо в Telegram 🤝
           </p>
         </div>
       </div>
@@ -28,10 +28,10 @@
     <div class="px-8 my-auto">
       <div class="flex max-w-2xl mx-auto flex-col items-center">
         <button @click="handleRegister" class="w-full text-white bg-gradient-to-r from-green-500 via-green-500 to-green-500 hover:brightness-105 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 rounded-lg text-sm py-2.5 text-center">
-          Start using CoNote
+          Начать использовать CoNote
         </button>
         <button @click="handleEnterCodeRedir" class="mt-2 w-full text-white bg-gradient-to-r from-cyan-500 via-cyan-500 to-cyan-500 hover:brightness-105 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 rounded-lg text-sm px-5 py-2.5 text-center">
-          Enter with shared code
+          Войти с помощью кода
         </button>
       </div>
     </div>
@@ -40,10 +40,18 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-const router = useRouter()
+import { useTelegramUserStore } from '@/stores/telegramUser'
 
-const handleRegister = () => {
-  router.push('/home')
+const router = useRouter()
+const store = useTelegramUserStore()
+
+const handleRegister = async () => {
+  try {
+    await store.registerUser()
+    router.push('/home')
+  } catch (error) {
+    console.error('Ошибка при регистрации пользователя:', error)
+  }
 }
 
 const handleEnterCodeRedir = () => {
