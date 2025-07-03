@@ -24,6 +24,7 @@ target_metadata = Base.metadata
 # Models
 from src.management.models.users import TelegramUser
 from src.notetaking.models.rooms import Room, telegram_users_rooms_association
+from src.notetaking.models.notes import Note
 
 
 def get_url():

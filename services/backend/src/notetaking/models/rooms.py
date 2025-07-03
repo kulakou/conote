@@ -29,6 +29,12 @@ class Room(Base):
     code: Mapped[int] = mapped_column(sa.Integer, unique=True, nullable=True)
     type: Mapped[RoomType] = mapped_column(sa.String, nullable=False)
     created_by: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+
+    notes: Mapped[List["Note"]] = sa.orm.relationship(
+        "Note",
+        backref="room",
+        lazy="selectin"
+    )
     users: Mapped[List["TelegramUser"]] = sa.orm.relationship(
         secondary=telegram_users_rooms_association,
         back_populates="rooms",

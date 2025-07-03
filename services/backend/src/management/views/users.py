@@ -1,4 +1,3 @@
-import random
 from typing import Annotated
 
 import sqlalchemy as sa
@@ -10,6 +9,7 @@ from src.core.database import get_db_session
 from src.management.models.users import TelegramUser
 from src.management.schemas.users import TelegramUserRegisterSchema
 from src.notetaking.models.rooms import Room, RoomType
+from src.notetaking.models.notes import Note
 
 DBSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 
@@ -40,8 +40,8 @@ async def register(
 
     # NOTE: Create private room for created user in database
     room = Room(
-        name="My Notes", type=RoomType.SINGLE_SEAT_PRIVATE.value,
-        users=[telegram_user, ], created_by=telegram_user.id
+        name="Приватная", type=RoomType.SINGLE_SEAT_PRIVATE.value,
+        users=[telegram_user, ], created_by=telegram_user.tg_id
     )
 
     # NOTE: If code is provided - add user to shared room
@@ -64,6 +64,17 @@ async def register(
         db_session.add(room)
         if target_room:
             db_session.add(target_room)
+        await db_session.commit()
+        await db_session.refresh(room)
+    except sa.exc.IntegrityError:
+        return {"error": "Error during registration process"}
+
+    note = Note(
+        name="Пример твоей записки", type="text", text="Пример заполнения записки",
+        created_by=room.created_by, room_id=room.id
+    )
+    try:
+        db_session.add(note)
         await db_session.commit()
     except sa.exc.IntegrityError:
         return {"error": "Error during registration process"}

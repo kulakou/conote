@@ -2,25 +2,25 @@
   <div class="grid h-screen grid-rows-3">
     <div class="px-8 py-4">
       <div class="flex max-w-2xl mx-auto bg-white rounded-sm shadow-md">
-        <div>
+        <div class="w-1/12 flex-shrink-0">
           <img
-            class="h-full w-full object-cover"
-            src="../assets/logo.svg"
+            class="h-full w-20 object-cover"
+            src="../assets/logo.png"
             alt="CoNote Logo"
           />
         </div>
-        <div class="p-6">
+        <div class="w-11/12 p-6">
           <div class="uppercase tracking-wide text-sm text-violet-500 font-medium">
             CoNote
           </div>
           <a
             href="#"
-            class="mt-1 text-lg tracking-tight font-medium text-black hover:underline"
+            class="text-lg tracking-tight font-medium text-black hover:underline block"
           >
             Это так просто - делиться 🥹
           </a>
           <p class="mt-2 text-sm text-slate-500">
-            Ты в паре шагов от того чтобы начать делиться записками с такими друзьями прямо в Telegram 🤝
+            Ты в паре шагов от того чтобы начать делиться записками с твоими друзьями прямо в Telegram 🤝
           </p>
         </div>
       </div>

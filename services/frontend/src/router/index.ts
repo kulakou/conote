@@ -4,12 +4,16 @@ import NotFromTelegramPage from '@/pages/NotFromTelegramPage.vue'
 import WelcomePage from '@/pages/WelcomePage.vue'
 import WelcomeEnterCodePage from '@/pages/WelcomeEnterCodePage.vue'
 import { useTelegramUserStore } from '@/stores/telegramUser'
+import AllRoomsPage from "../pages/AllRoomsPage.vue";
+import RoomPage from "../pages/RoomPage.vue";
 
 const routes = [
   { path: '/', redirect: '/home' },
   { path: '/welcome', name: 'welcome', component: WelcomePage },
   { path: '/welcome/code', name: 'welcome_code', component: WelcomeEnterCodePage },
   { path: '/home', name: 'home', component: HomePage },
+  { path: '/rooms/all', name: 'all_rooms', component: AllRoomsPage },
+  { path: '/rooms/:room_id', name: 'room_page', component: RoomPage },
   { path: '/notg', name: 'notg', component: NotFromTelegramPage },
 ]
 
