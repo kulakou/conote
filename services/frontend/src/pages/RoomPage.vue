@@ -66,27 +66,42 @@
         <div class="max-w-2xl mx-auto bg-white rounded-sm shadow-md">
           <div class="p-6 text-center">
             <template v-if="!loading && totalNotes > 0">
-              <button
+              <div
                 v-for="note in notes"
                 :key="note.id"
-                @click=""
-                class="relative my-1.5 w-full text-gray-600 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 hover:brightness-105 rounded-lg text-sm py-2.5 text-center"
+                class="flex items-center justify-between my-2 w-full"
               >
-                <span class="absolute left-2 top-1/2 -translate-y-1/2">📝</span>
-                <span class="block truncate px-12" :title="note.name">
-                  {{ note.name }}
-                </span>
-              </button>
+                <!-- Кнопка перехода к записке -->
+                <button
+                  @click="router.push(`/rooms/${room.id}/notes/${note.id}`)"
+                  class="flex items-center flex-grow bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 hover:brightness-105 rounded-lg text-sm text-gray-600 py-2.5 pl-3 pr-4 text-left overflow-hidden"
+                >
+                  <span class="mr-2">📝</span>
+                  <span class="truncate block w-full">
+                    {{ note.name }}
+                  </span>
+                </button>
+
+                <!-- Отдельная кнопка удаления -->
+                <button
+                  @click="deleteNote(note.id)"
+                  class="ml-2 flex items-center justify-center text-red-600 rounded-lg p-2"
+                  title="Удалить записку"
+                >
+                  🗑️
+                </button>
+              </div>
             </template>
 
             <template v-else-if="!loading && totalNotes === 0">
-              <p class="text-slate-400">В этой комнате пока нет записок 💤</p>
+              <p class="text-slate-400 my-12">Пока что здесь пусто 💤</p>
             </template>
 
             <!-- Создание новой записки -->
             <template v-if="!loading">
               <button
-                class="my-2 mt-5 w-full text-white bg-gradient-to-r from-green-500 to-green-500 hover:brightness-105 rounded-lg text-sm py-2.5 text-center"
+                  @click="router.push(`/rooms/${room.id}/notes/create`)"
+                  class="my-2 mt-5 w-full text-white bg-gradient-to-r from-green-500 to-green-500 hover:brightness-105 rounded-lg text-sm py-2.5 text-center"
               >
                 Создать новую записку
               </button>
@@ -97,10 +112,10 @@
     </template>
 
     <!-- Footer -->
-    <footer class="fixed bottom-2 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around items-center py-2 z-50">
+    <footer class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around items-center py-2 z-50">
       <button
         @click="router.push('/home')"
-        class="my-3 flex flex-col items-center text-violet-600 hover:text-violet-800 text-sm"
+        class="mb-4 flex flex-col items-center text-violet-600 hover:text-violet-800 text-sm"
       >
         <img src="@/assets/home.png" alt="Home" class="h-8 w-8 m-2" />
       </button>
@@ -164,6 +179,28 @@ const prevPage = () => {
   if (page.value > 1) {
     page.value--
     fetchNotes()
+  }
+}
+
+const deleteNote = async (noteId: number) => {
+  const tgId = store.user?.id
+  if (!tgId) return
+
+  try {
+    if (!confirm("Ты точно хочешь удалить записку?")) return
+
+    await axios.delete(`/api/notes/${noteId}`, {
+      params: { tg_id: tgId }
+    })
+
+    // Если после удаления записка — последняя на странице, и это была последняя страница, уходим назад
+    if (notes.value.length === 1 && page.value > 1) {
+      page.value--
+    }
+
+    await fetchNotes() // перезагружаем данные
+  } catch (error) {
+    console.error('Ошибка при удалении записки', error)
   }
 }
 

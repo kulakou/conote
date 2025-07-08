@@ -19,3 +19,8 @@ class RoomSchema(BaseModel):
     type: str
     created_by: int
     notes: List[NoteSchemaShortened]
+
+
+class RoomCreateSchema(BaseModel):
+    name: str
+    type: str

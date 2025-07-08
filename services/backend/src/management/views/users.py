@@ -69,12 +69,19 @@ async def register(
     except sa.exc.IntegrityError:
         return {"error": "Error during registration process"}
 
-    note = Note(
-        name="Пример твоей записки", type="text", text="Пример заполнения записки",
+    note_text = Note(
+        name="Пример текстовой записки", type="text",
+        text="Здесь будет текстовое наполнение твоей записки",
+        created_by=room.created_by, room_id=room.id
+    )
+    note_link = Note(
+        name="Пример записки-ссылки", type="link",
+        link="https://google.com", text="Эта ссылка ведет тебя в Google!",
         created_by=room.created_by, room_id=room.id
     )
     try:
-        db_session.add(note)
+        db_session.add(note_text)
+        db_session.add(note_link)
         await db_session.commit()
     except sa.exc.IntegrityError:
         return {"error": "Error during registration process"}

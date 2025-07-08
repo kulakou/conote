@@ -7,9 +7,9 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_db_session
-from src.notetaking.models.rooms import Room, RoomType
+from src.notetaking.models.rooms import Room, RoomType, telegram_users_rooms_association
 from src.notetaking.models.notes import Note
-from src.notetaking.schemas.rooms import RoomSchema, RoomSchemaShortened
+from src.notetaking.schemas.rooms import RoomSchema, RoomSchemaShortened, RoomCreateSchema
 from src.management.models.users import TelegramUser
 
 DBSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
@@ -166,3 +166,71 @@ async def get_single_room(
         "notes": [ {"id": note.id, "name": note.name} for note in notes ],
         "total_notes": total_notes
     })
+
+@rooms_router.post(
+    path='',
+    tags=["rooms"]
+)
+async def create_room(
+        db_session: DBSessionDep,
+        data: RoomCreateSchema,
+        tg_id: int
+):
+    import time
+    time.sleep(2)
+    query = sa.select(TelegramUser).where(TelegramUser.tg_id == tg_id)
+    try:
+        result = await db_session.execute(query)
+        telegram_user = result.scalar_one_or_none()
+        if not telegram_user:
+            raise Exception
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Telegram user can't be fetched")
+
+    room_types = [
+        RoomType.SHARED.value,
+        RoomType.SINGLE_SEAT.value,
+    ]
+    if data.type not in room_types:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Type should be one from: {', '.join(room_types)}"
+        )
+
+    room = Room(name=data.name, type=data.type, created_by=tg_id)
+    room.users.append(telegram_user)
+    try:
+        db_session.add(room)
+        await db_session.commit()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error when creating room")
+    return JSONResponse(status_code=200, content={"status": "OK"})
+
+
+@rooms_router.delete(
+    path="/{room_id}/leave",
+    tags=["rooms"]
+)
+async def leave_room(
+    db_session: DBSessionDep,
+    room_id: int,
+    tg_id: int
+):
+    # Получаем пользователя
+    user_query = sa.select(TelegramUser).where(TelegramUser.tg_id == tg_id)
+    result = await db_session.execute(user_query)
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    # Удаляем связь между пользователем и комнатой
+    delete_stmt = telegram_users_rooms_association.delete().where(
+        telegram_users_rooms_association.c.room_id == room_id,
+        telegram_users_rooms_association.c.telegram_user_id == user.id
+    )
+
+    await db_session.execute(delete_stmt)
+    await db_session.commit()
+
+    return JSONResponse(status_code=200, content={"status": "left"})

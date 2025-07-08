@@ -6,6 +6,9 @@ import WelcomeEnterCodePage from '@/pages/WelcomeEnterCodePage.vue'
 import { useTelegramUserStore } from '@/stores/telegramUser'
 import AllRoomsPage from "../pages/AllRoomsPage.vue";
 import RoomPage from "../pages/RoomPage.vue";
+import NotePage from "../pages/NotePage.vue";
+import CreateRoomPage from "../pages/CreateRoomPage.vue";
+import CreateNotePage from "../pages/CreateNotePage.vue";
 
 const routes = [
   { path: '/', redirect: '/home' },
@@ -14,6 +17,9 @@ const routes = [
   { path: '/home', name: 'home', component: HomePage },
   { path: '/rooms/all', name: 'all_rooms', component: AllRoomsPage },
   { path: '/rooms/:room_id', name: 'room_page', component: RoomPage },
+  { path: '/rooms/:room_id/notes/:note_id', name: 'note_page', component: NotePage },
+  { path: '/rooms/:room_id/notes/create', name: 'create_note_page', component: CreateNotePage },
+  { path: '/rooms/create', name: 'create_room_page', component: CreateRoomPage },
   { path: '/notg', name: 'notg', component: NotFromTelegramPage },
 ]
 

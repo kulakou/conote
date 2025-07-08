@@ -56,11 +56,11 @@
 
     <!-- Footer navigation -->
     <footer
-      class="fixed bottom-2 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around items-center py-2 z-50"
+      class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around items-center py-2 z-50"
     >
       <button
         @click="router.push('/home')"
-        class="my-3 flex flex-col items-center text-violet-600 hover:text-violet-800 text-sm"
+        class="mb-4 flex flex-col items-center text-violet-600 hover:text-violet-800 text-sm"
       >
         <img src="@/assets/home.png" alt="Home" class="h-8 w-8 m-2" />
       </button>
