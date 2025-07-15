@@ -10,7 +10,7 @@ from src.core.database import get_db_session
 from src.notetaking.models.rooms import Room
 from src.management.models.users import TelegramUser
 from src.notetaking.models.notes import Note
-from src.notetaking.schemas.notes import NoteSchema, NoteCreateSchema
+from src.notetaking.schemas.notes import NoteSchema, NoteCreateSchema, NoteUpdateSchema
 
 DBSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 
@@ -104,3 +104,36 @@ async def create_note(
     await db_session.refresh(note)
 
     return NoteSchema.model_validate(note)
+
+
+@notes_router.put(
+    path="/{note_id}",
+    tags=["notes"]
+)
+async def update_note(
+    note_id: int,
+    tg_id: int,
+    data: NoteUpdateSchema,
+    db_session: DBSessionDep
+):
+    # Проверка доступа
+    query = sa.select(Note).join(Room).join(Room.users).where(
+        Note.id == note_id,
+        TelegramUser.tg_id == tg_id
+    )
+    result = await db_session.execute(query)
+    note = result.scalar_one_or_none()
+
+    if not note:
+        raise HTTPException(status_code=403, detail="Нет доступа или записка не найдена")
+
+    note.name = data.name
+    note.text = data.text
+    note.link = data.link
+    note.type = data.type.value
+
+    try:
+        await db_session.commit()
+        return JSONResponse(status_code=200, content={"status": "updated"})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Ошибка при обновлении записки")

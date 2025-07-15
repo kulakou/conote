@@ -11,6 +11,13 @@ class NoteSchemaShortened(BaseModel):
     name: str
 
 
+class NoteUpdateSchema(BaseModel):
+    name: str
+    text: Optional[str] = None
+    link: Optional[str] = None
+    type: NoteType
+
+
 class NoteSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

@@ -27,6 +27,7 @@
       <div class="flex max-w-2xl mx-auto mt-10 flex-col items-center">
         <div class="flex gap-2 m-4">
           <input
+            @paste="handlePaste"
             v-for="(digit, index) in code"
             :key="index"
             v-model="code[index]"
@@ -58,6 +59,20 @@
 
   const router = useRouter()
   const store = useTelegramUserStore()
+
+  function handlePaste(event: ClipboardEvent) {
+    event.preventDefault()
+    const pasted = event.clipboardData?.getData('text') ?? ''
+    const digits = pasted.replace(/\D/g, '').slice(0, code.length) // только цифры
+
+    for (let i = 0; i < code.length; i++) {
+      code[i] = digits[i] ?? ''
+    }
+
+    // Фокус на следующую пустую ячейку или на последнюю
+    const nextIndex = digits.length < code.length ? digits.length : code.length - 1
+    inputRefs.value[nextIndex]?.focus()
+  }
 
   const handleBack = () => {
     router.push('/welcome')
@@ -109,6 +124,9 @@
         router.push('/home')
       }
     } catch (error) {
+      const message = error.response?.data?.detail
+      alert(message)
+      inputRefs.value[5]?.focus()
       console.error('Ошибка при регистрации пользователя:', error)
     }
   }

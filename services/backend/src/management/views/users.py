@@ -1,7 +1,7 @@
 from typing import Annotated
 
 import sqlalchemy as sa
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from fastapi.routing import APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,6 +27,15 @@ async def register(
         data: TelegramUserRegisterSchema,
         db_session: DBSessionDep,
 ):
+    target_room = None
+    if data.code:
+        query = sa.select(Room).options(
+            sa.orm.selectinload(Room.users)
+        ).where(Room.code == data.code)
+        result = await db_session.execute(query)
+        target_room = result.scalar_one_or_none()
+        if not target_room:
+            raise HTTPException(status_code=404, detail="Комнаты с таким кодом не существует")
 
     # NOTE: Create user in database
     telegram_user = TelegramUser(**data.dict(exclude={"code"}))
@@ -35,6 +44,8 @@ async def register(
         db_session.add(telegram_user)
         await db_session.commit()
         await db_session.refresh(telegram_user)
+        if target_room:
+            await db_session.refresh(target_room)
     except sa.exc.IntegrityError:
         return {"error": "Error during registration process"}
 
@@ -44,20 +55,8 @@ async def register(
         users=[telegram_user, ], created_by=telegram_user.tg_id
     )
 
-    # NOTE: If code is provided - add user to shared room
-    target_room = None
-    if data.code:
-        query = sa.select(
-            Room
-        ).options(
-            sa.orm.selectinload(Room.users)
-        ).where(
-            Room.code == data.code
-        )
-        result = await db_session.execute(query)
-        target_room = result.scalar_one_or_none()
-        if target_room:
-            target_room.users.append(telegram_user)
+    if data.code and target_room:
+        target_room.users.append(telegram_user)
 
     # NOTE: Save updated Room objects to database
     try:

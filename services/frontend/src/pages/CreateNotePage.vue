@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-screen relative overflow-hidden">
     <!-- Header -->
-    <div class="px-8 py-4 pt-6 shrink-0 z-10 bg-white">
+    <div class="px-8 pt-6 shrink-0 z-10 bg-white">
       <div class="flex max-w-2xl mx-auto bg-white rounded-sm shadow-md">
         <div class="w-1/12 flex-shrink-0">
           <img class="h-full w-20 object-cover" src="../assets/logo.png" alt="CoNote Logo" />
@@ -15,18 +15,17 @@
       </div>
     </div>
 
-    <!-- Scrollable Content (Заголовок + форма) -->
-    <div class="flex-1 overflow-y-auto px-8 pb-40 pt-4"> <!-- важный отступ снизу (pb-40) -->
-      <!-- Заголовок -->
-      <div class="pb-4">
-        <div class="relative flex flex-col justify-center h-10 max-w-2xl mx-auto bg-white rounded-sm shadow-md px-4">
-          <div class="text-center w-full">
-            <div class="uppercase tracking-wide text-sm text-violet-500 font-medium truncate px-4">
-              Создание записки
-            </div>
+    <div class="px-8 py-4">
+      <div class="relative flex flex-col justify-center max-w-2xl mx-auto bg-white rounded-sm shadow-md px-4">
+        <div class="text-center w-full">
+          <div class="uppercase tracking-wide text-sm text-violet-500 font-medium truncate px-4 py-2">
+            Создание записки
           </div>
         </div>
       </div>
+    </div>
+    <!-- Scrollable Content (Заголовок + форма) -->
+    <div class="flex-1 overflow-y-auto px-8">
 
       <!-- Форма -->
       <div class="text-center uppercase relative flex flex-col max-w-2xl mx-auto bg-white rounded-sm shadow-md px-6 py-3">
@@ -35,7 +34,7 @@
           v-model="noteName"
           :disabled="loading"
           placeholder="Введи название записки"
-          class="resize-none pl-3 mb-2 text-left border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 focus:outline-none focus:ring-2 focus:ring-violet-400"
+          class="resize-none pl-3 mb-4 text-left border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 focus:outline-none focus:ring-2 focus:ring-violet-400"
           required
           @focus="inputFocused = true"
           @blur="inputFocused = false"
@@ -123,13 +122,19 @@
     <!-- Footer -->
     <footer
       v-show="!inputFocused"
-      class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around items-center py-2 z-40"
+      class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around items-center py-2 px-24 z-40"
     >
       <button
         @click="router.push('/home')"
         class="mb-4 flex flex-col items-center text-violet-600 hover:text-violet-800 text-sm"
       >
         <img src="@/assets/home.png" alt="Home" class="h-8 w-8 m-2" />
+      </button>
+      <button
+        @click="router.push(`/rooms/${route.params.room_id}`)"
+        class="mb-4 flex flex-col items-center text-violet-600 hover:text-violet-800 text-sm"
+      >
+        <img src="@/assets/back.png" alt="Back" class="h-8 w-8 m-2" />
       </button>
     </footer>
   </div>

@@ -100,13 +100,19 @@
     <!-- Footer -->
     <footer
       v-show="!inputFocused"
-      class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around items-center py-2 z-40"
+      class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around items-center py-2 px-24 z-40"
     >
       <button
         @click="router.push('/home')"
         class="mb-4 flex flex-col items-center text-violet-600 hover:text-violet-800 text-sm"
       >
         <img src="@/assets/home.png" alt="Home" class="h-8 w-8 m-2" />
+      </button>
+      <button
+        @click="router.push(`/rooms/all`)"
+        class="mb-4 flex flex-col items-center text-violet-600 hover:text-violet-800 text-sm"
+      >
+        <img src="@/assets/back.png" alt="Back" class="h-8 w-8 m-2" />
       </button>
     </footer>
   </div>

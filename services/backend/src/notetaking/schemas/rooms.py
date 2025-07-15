@@ -8,6 +8,8 @@ class RoomSchemaShortened(BaseModel):
 
     id: int
     name: str
+    code: Optional[int]
+    created_by: int
 
 
 class RoomSchema(BaseModel):
@@ -21,6 +23,16 @@ class RoomSchema(BaseModel):
     notes: List[NoteSchemaShortened]
 
 
+class RoomCodeSchema(BaseModel):
+    code: int
+
+
 class RoomCreateSchema(BaseModel):
     name: str
     type: str
+
+
+class RoomUpdateSchema(BaseModel):
+    name: str
+    type: str
+    code: Optional[int]

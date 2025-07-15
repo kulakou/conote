@@ -1,3 +1,5 @@
+import random
+
 import sqlalchemy as sa
 
 from typing import Annotated
@@ -9,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.database import get_db_session
 from src.notetaking.models.rooms import Room, RoomType, telegram_users_rooms_association
 from src.notetaking.models.notes import Note
-from src.notetaking.schemas.rooms import RoomSchema, RoomSchemaShortened, RoomCreateSchema
+from src.notetaking.schemas.rooms import RoomSchema, RoomCodeSchema, RoomUpdateSchema, RoomSchemaShortened, RoomCreateSchema
 from src.management.models.users import TelegramUser
 
 DBSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
@@ -17,6 +19,21 @@ DBSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 rooms_router = APIRouter(
     prefix='/rooms'
 )
+
+@rooms_router.get(
+    path='/code/generated',
+    tags=["rooms"]
+)
+async def generate_room_code(db_session: DBSessionDep):
+    retries = 10
+    for _ in range(0, retries):
+        random_code = random.randrange(100000, 999999)
+        query = sa.select(Room).where(Room.code == random_code)
+        result = await db_session.execute(query)
+        room = result.scalar_one_or_none()
+        if not room:
+            return random_code
+    return None
 
 
 @rooms_router.get(
@@ -234,3 +251,104 @@ async def leave_room(
     await db_session.commit()
 
     return JSONResponse(status_code=200, content={"status": "left"})
+
+
+@rooms_router.post(
+    path="/join",
+    tags=["rooms"]
+)
+async def join_to_room(
+    tg_id: int,
+    data: RoomCodeSchema,
+    db_session: DBSessionDep
+):
+    user_query = sa.select(TelegramUser).where(TelegramUser.tg_id == tg_id)
+    result = await db_session.execute(user_query)
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    room_query = sa.select(
+        Room
+    ).where(
+        Room.code == data.code
+    ).options(
+        sa.orm.selectinload(Room.users)
+    )
+    result = await db_session.execute(room_query)
+    room = result.scalar_one_or_none()
+
+    if not room:
+        raise HTTPException(status_code=404, detail="Комнаты с таким кодом не существует")
+    if user in room.users:
+        raise HTTPException(status_code=400, detail="Ты уже состоишь в этой комнате")
+
+    room.users.append(user)
+    db_session.add(room)
+    await db_session.commit()
+    return JSONResponse(status_code=200, content={"status": "updated"})
+
+
+@rooms_router.put(
+    path="/{room_id}",
+    tags=["rooms"]
+)
+async def update_room(
+    room_id: int,
+    tg_id: int,
+    data: RoomUpdateSchema,
+    db_session: DBSessionDep
+):
+    query = sa.select(Room).where(Room.id == room_id)
+    result = await db_session.execute(query)
+    room = result.scalar_one_or_none()
+
+    if not room:
+        raise HTTPException(status_code=404, detail="Комната не найдена")
+
+    if room.created_by != tg_id:
+        raise HTTPException(status_code=403, detail="У тебя нет прав на редактирование")
+
+    if data.type != RoomType.SHARED.value and data.code is not None:
+        raise HTTPException(status_code=400, detail="Приватная комната не должна иметь код")
+
+    room.name = data.name
+    room.type = data.type
+    room.code = data.code
+
+    try:
+        await db_session.commit()
+        return JSONResponse(status_code=200, content={"status": "updated"})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Ошибка при обновлении комнаты")
+
+
+@rooms_router.post(
+    path="/{room_id}/code",
+    tags=["rooms"]
+)
+async def update_room_code(
+    room_id: int,
+    tg_id: int,
+    data: RoomCodeSchema,
+    db_session: DBSessionDep
+):
+    query = sa.select(Room).where(Room.id == room_id)
+    result = await db_session.execute(query)
+    room = result.scalar_one_or_none()
+
+    if not room:
+        raise HTTPException(status_code=404, detail="Комната не найдена")
+
+    if room.created_by != tg_id:
+        raise HTTPException(status_code=403, detail="У тебя нет прав на редактирование")
+
+    room.code = data.code
+    room.type = RoomType.SHARED.value
+
+    try:
+        await db_session.commit()
+        return JSONResponse(status_code=200, content={"status": "updated"})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Ошибка при обновлении комнаты")

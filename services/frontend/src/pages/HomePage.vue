@@ -47,7 +47,7 @@
           <div class="uppercase tracking-wide text-sm text-violet-500 font-medium mb-4">
             Подожди! Не забудь:
           </div>
-          <button @click="" class="w-full text-white bg-gradient-to-r from-green-500 via-green-500 to-green-500 hover:brightness-105 rounded-lg text-sm py-2.5 text-center">
+          <button @click="router.push('/share')" class="w-full text-white bg-gradient-to-r from-green-500 via-green-500 to-green-500 hover:brightness-105 rounded-lg text-sm py-2.5 text-center">
             Пригласить своих друзей в CoNote!
           </button>
         </div>
@@ -56,13 +56,19 @@
 
     <!-- Footer navigation -->
     <footer
-      class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around items-center py-2 z-50"
+      class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around items-center px-24 py-2 z-50"
     >
       <button
         @click="router.push('/home')"
         class="mb-4 flex flex-col items-center text-violet-600 hover:text-violet-800 text-sm"
       >
         <img src="@/assets/home.png" alt="Home" class="h-8 w-8 m-2" />
+      </button>
+      <button
+        @click=""
+        class="mb-4 opacity-25 flex flex-col items-center text-violet-600 hover:text-violet-800 text-sm"
+      >
+        <img src="@/assets/back.png" alt="Back" class="h-8 w-8 m-2" />
       </button>
     </footer>
   </div>

@@ -78,15 +78,15 @@ export const useTelegramUserStore = defineStore('telegramUser', {
     },
 
     async registerUser(code = null): Promise<boolean> {
+      let data = {
+        tg_id: this.user.id,
+        tg_username: this.user.username
+      }
+      if (code !== null) {
+        data.code = code
+      }
       try {
-        let data = {
-          tg_id: this.user.id,
-          tg_username: this.user.username
-        }
-        if (code !== null) {
-          data.code = code
-        }
-        await axios.post('/api/telegram_users/register', data)
+        const res = await axios.post('/api/telegram_users/register', data)
         this.userIsRegistered = true
       } catch (error) {
         console.error('Registration failed', error)
